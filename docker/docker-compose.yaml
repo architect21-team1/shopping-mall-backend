@@ -1,0 +1,11 @@
+version: '2'
+services: 
+  saga-example-rabbit:
+    image: rabbitmq:3-management
+    container_name: saga-example-rabbit
+    hostname: saga-example-rabbit
+    ports:
+      - "5050:15672"
+      - "5672:5672"
+    volumes:
+      - $PWD/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
