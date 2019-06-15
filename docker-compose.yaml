@@ -8,4 +8,4 @@ services:
       - "5050:15672"
       - "5672:5672"
     volumes:
-      - $PWD/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - $PWD/docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
