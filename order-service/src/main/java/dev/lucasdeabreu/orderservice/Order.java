@@ -21,4 +21,6 @@ public class Order {
     private Long productId;
 
     private BigDecimal value;
+
+    private OrderStatus status;
 }
