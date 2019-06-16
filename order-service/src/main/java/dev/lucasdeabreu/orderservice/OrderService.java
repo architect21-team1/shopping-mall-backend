@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Log4j2
 @AllArgsConstructor
 @Service
@@ -16,10 +18,17 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(Order order) {
-        OrderCreateEvent event = new OrderCreateEvent(order);
-        log.debug("Publish an order {}", event);
-        publisher.publishEvent(event);
+        order.setTransactionId(UUID.randomUUID().toString());
+
+        publish(order);
+
         log.debug("Saving an order {}", order);
         return repository.save(order);
+    }
+
+    private void publish(Order order) {
+        OrderCreatedEvent event = new OrderCreatedEvent(order);
+        log.debug("Publishing an order created event {}", event);
+        publisher.publishEvent(event);
     }
 }
