@@ -1,4 +1,4 @@
-package dev.lucasdeabreu.paymentservice.order;
+package dev.lucasdeabreu.stockservice;
 
 import lombok.Data;
 

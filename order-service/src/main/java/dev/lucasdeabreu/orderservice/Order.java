@@ -20,6 +20,8 @@ public class Order {
 
     private Long productId;
 
+    private Long quantity;
+
     private BigDecimal value;
 
     private OrderStatus status;
