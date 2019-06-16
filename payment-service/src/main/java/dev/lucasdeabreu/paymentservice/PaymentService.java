@@ -40,8 +40,8 @@ public class PaymentService {
 
     private Payment createOrder(Order order) {
         return Payment.builder()
-                .paymentStatus(PaymentStatus.CHARGED)
-                .valueCharged(order.getValue())
+                .paymentStatus(PaymentStatus.BILLED)
+                .valueBilled(order.getValue())
                 .transactionId(order.getTransactionId())
                 .orderId(order.getId())
                 .build();

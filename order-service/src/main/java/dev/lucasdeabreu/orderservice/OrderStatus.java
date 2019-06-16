@@ -2,6 +2,6 @@ package dev.lucasdeabreu.orderservice;
 
 public enum OrderStatus {
 
-    PENDING_PAYMENT, CANCEL
+    PENDING_PAYMENT, BILLED, CANCEL
 
 }

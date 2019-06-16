@@ -12,23 +12,25 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 public class BilledOrderEventListener {
 
+    private static final String ROUTING_KEY = "";
+
     private final RabbitTemplate rabbitTemplate;
     private final Converter converter;
-    private final String queueBilledOrderCreateName;
+    private final String topicBilledOrderCreateName;
 
     public BilledOrderEventListener(RabbitTemplate rabbitTemplate,
                                     Converter converter,
-                                    @Value("${queue.billed-order}") String queueBilledOrderCreateName) {
+                                    @Value("${topic.billed-order}") String topicBilledOrderCreateName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
-        this.queueBilledOrderCreateName = queueBilledOrderCreateName;
+        this.topicBilledOrderCreateName = topicBilledOrderCreateName;
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onBilledOrderEvent(BilledOrderEvent event) {
-        log.debug("Sending billed order event to {}, event: {}", queueBilledOrderCreateName, event);
-        rabbitTemplate.convertAndSend(queueBilledOrderCreateName, converter.toJSON(event));
+        log.debug("Sending billed order event to {}, event: {}", topicBilledOrderCreateName, event);
+        rabbitTemplate.convertAndSend(topicBilledOrderCreateName, ROUTING_KEY, converter.toJSON(event));
     }
 
 }

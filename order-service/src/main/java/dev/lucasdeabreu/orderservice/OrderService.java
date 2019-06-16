@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -36,5 +37,18 @@ public class OrderService {
 
     public List<Order> findAll() {
         return repository.findAll();
+    }
+
+    @Transactional
+    public void updateOrderAsBilled(Long id) {
+        log.debug("Updating Order {} to BILLED", id);
+        Optional<Order> orderOptional = repository.findById(id);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus(OrderStatus.BILLED);
+            repository.save(order);
+        } else {
+            log.error("Cannot update Order to BILLED, Order {} not found", id);
+        }
     }
 }

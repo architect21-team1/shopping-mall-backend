@@ -24,7 +24,7 @@ public class Payment {
 
     private Long orderId;
 
-    private BigDecimal valueCharged;
+    private BigDecimal valueBilled;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
