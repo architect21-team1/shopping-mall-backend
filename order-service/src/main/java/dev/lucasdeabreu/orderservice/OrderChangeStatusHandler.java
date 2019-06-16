@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @AllArgsConstructor
-public class BilledOrderChangeStatusHandler {
+public class OrderChangeStatusHandler {
 
     private final Converter converter;
     private final OrderService orderService;
@@ -17,8 +17,15 @@ public class BilledOrderChangeStatusHandler {
     @RabbitListener(queues = {"${queue.billed-order}"})
     public void handle(@Payload String payload) {
         log.debug("Handling a billed order change status event {}", payload);
-        BilledOrderEvent event = converter.toObject(payload, BilledOrderEvent.class);
+        OrderChangeStatusEvent event = converter.toObject(payload, OrderChangeStatusEvent.class);
         orderService.updateOrderAsBilled(event.getOrder().getId());
+    }
+
+    @RabbitListener(queues = {"${queue.order-done}"})
+    public void handleOrderDoneEvent(@Payload String payload) {
+        log.debug("Handling a order done change status event {}", payload);
+        OrderChangeStatusEvent event = converter.toObject(payload, OrderChangeStatusEvent.class);
+        orderService.updateOrderAsDone(event.getOrder().getId());
     }
 
 }

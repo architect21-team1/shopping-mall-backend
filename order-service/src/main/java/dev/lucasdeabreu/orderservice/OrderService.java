@@ -41,14 +41,23 @@ public class OrderService {
 
     @Transactional
     public void updateOrderAsBilled(Long id) {
-        log.debug("Updating Order {} to BILLED", id);
+        updateOrderStatus(id, OrderStatus.BILLED);
+    }
+
+    @Transactional
+    public void updateOrderAsDone(Long id) {
+        updateOrderStatus(id, OrderStatus.DONE);
+    }
+
+    private void updateOrderStatus(Long id, OrderStatus status) {
+        log.debug("Updating Order {} to {}", id, status);
         Optional<Order> orderOptional = repository.findById(id);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            order.setStatus(OrderStatus.BILLED);
+            order.setStatus(status);
             repository.save(order);
         } else {
-            log.error("Cannot update Order to BILLED, Order {} not found", id);
+            log.error("Cannot update Order to {}, Order {} not found", status, id);
         }
     }
 }
