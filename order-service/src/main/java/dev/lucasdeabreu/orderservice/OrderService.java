@@ -40,24 +40,16 @@ public class OrderService {
     }
 
     @Transactional
-    public void updateOrderAsDone(Long id) {
-        updateOrderStatus(id, Order.OrderStatus.DONE);
-    }
-
-    @Transactional
-    public void updateOrderAsCanceled(Long id) {
-        updateOrderStatus(id, Order.OrderStatus.CANCELED);
-    }
-
-    private void updateOrderStatus(Long id, Order.OrderStatus status) {
-        log.debug("Updating Order {} to {}", id, status);
-        Optional<Order> orderOptional = repository.findById(id);
+    public void updateOrderAsDone(String transactionId) {
+        Order.OrderStatus status = Order.OrderStatus.DONE;
+        log.debug("Updating Order {} to {}", transactionId, status);
+        Optional<Order> orderOptional = repository.findByTransactionId(transactionId);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             order.setStatus(status);
             repository.save(order);
         } else {
-            log.error("Cannot update Order to {}, Order {} not found", status, id);
+            log.error("Cannot update Order to {}, Order {} not found", status, transactionId);
         }
     }
 

@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @AllArgsConstructor
-public class OrderCanceledHandler {
+public class OrderCanceledEventHandler {
 
     private final Converter converter;
     private final OrderService orderService;
 
     @RabbitListener(queues = {"${queue.order-canceled}"})
-    public void onRefundPayment(@Payload String payload) {
+    public void onOrderCanceled(@Payload String payload) {
         log.debug("Handling a refund order event {}", payload);
         OrderCanceledEvent event = converter.toObject(payload, OrderCanceledEvent.class);
         orderService.cancelOrder(event.getOrder().getTransactionId(), event.getReason());
