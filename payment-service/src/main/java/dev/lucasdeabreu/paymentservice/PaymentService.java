@@ -53,17 +53,14 @@ public class PaymentService {
         log.debug("Refund Payment by transactionId {}", transactionId);
         Optional<Payment> paymentOptional = paymentRepository.findByTransactionId(transactionId);
         if (paymentOptional.isPresent()) {
-            Payment payment = refundPayment(paymentOptional.get(), reason);
-            log.debug("Payment {} was refund", payment.getId());
+            paymentOptional.ifPresent(payment -> {
+                payment.setPaymentStatus(Payment.PaymentStatus.REFUND);
+                payment.setRefundReason(reason);
+                paymentRepository.save(payment);
+                log.debug("Payment {} was refund by {}", payment.getId(), reason);
+            });
         } else {
             log.error("Cannot find the Payment by transaction {} to refund", transactionId);
         }
-    }
-
-    private Payment refundPayment(Payment payment, String reason) {
-        payment.setPaymentStatus(Payment.PaymentStatus.REFUND);
-        payment.setRefundReason(reason);
-        paymentRepository.save(payment);
-        return payment;
     }
 }

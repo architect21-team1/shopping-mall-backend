@@ -26,6 +26,11 @@ public class Order {
 
     private OrderStatus status;
 
+    /*
+     * Should move it to apart table
+     */
+    private String canceledReason;
+
     public enum OrderStatus {
         NEW, DONE, CANCELED
     }
