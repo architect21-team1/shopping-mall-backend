@@ -29,8 +29,13 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    /*
+     * I know it's ugly
+     */
+    private String refundReason;
+
     public enum PaymentStatus {
-        BILLED, CANCEL
+        BILLED, REFUND
     }
 
 }

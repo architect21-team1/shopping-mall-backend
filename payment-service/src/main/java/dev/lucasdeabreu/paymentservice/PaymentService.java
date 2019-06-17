@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Log4j2
 @AllArgsConstructor
 @Service
@@ -44,5 +46,24 @@ public class PaymentService {
                 .transactionId(order.getTransactionId())
                 .orderId(order.getId())
                 .build();
+    }
+
+    @Transactional
+    public void refund(String transactionId, String reason) {
+        log.debug("Refund Payment by transactionId {}", transactionId);
+        Optional<Payment> paymentOptional = paymentRepository.findByTransactionId(transactionId);
+        if (paymentOptional.isPresent()) {
+            Payment payment = refundPayment(paymentOptional.get(), reason);
+            log.debug("Payment {} was refund", payment.getId());
+        } else {
+            log.error("Cannot find the Payment by transaction {} to refund", transactionId);
+        }
+    }
+
+    private Payment refundPayment(Payment payment, String reason) {
+        payment.setPaymentStatus(Payment.PaymentStatus.REFUND);
+        payment.setRefundReason(reason);
+        paymentRepository.save(payment);
+        return payment;
     }
 }
