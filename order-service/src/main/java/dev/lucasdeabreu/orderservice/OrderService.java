@@ -66,12 +66,11 @@ public class OrderService {
         log.debug("Canceling Order by transaction {}", transactionId);
         Optional<Order> optionalOrder = repository.findByTransactionId(transactionId);
         if (optionalOrder.isPresent()) {
-            optionalOrder.ifPresent(order -> {
-                order.setStatus(Order.OrderStatus.CANCELED);
-                order.setCanceledReason(reason);
-                repository.save(order);
-                log.debug("Order {} was canceled by {}", order.getId(), reason);
-            });
+            Order order = optionalOrder.get();
+            order.setStatus(Order.OrderStatus.CANCELED);
+            order.setCanceledReason(reason);
+            repository.save(order);
+            log.debug("Order {} was canceled by {}", order.getId(), reason);
         } else {
             log.error("Cannot find an Order by transaction {}", transactionId);
         }
