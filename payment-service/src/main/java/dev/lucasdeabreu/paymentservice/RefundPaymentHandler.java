@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @AllArgsConstructor
-public class RefundOrderHandler {
+public class RefundPaymentHandler {
 
     private final Converter converter;
     private final PaymentService paymentService;
 
     @RabbitListener(queues = {"${queue.refund-payment}"})
-    public void onRefundOrder(@Payload String payload) {
+    public void onRefundPayment(@Payload String payload) {
         log.debug("Handling a refund order event {}", payload);
-        RefundOrderEvent event = converter.toObject(payload, RefundOrderEvent.class);
+        RefundPaymentEvent event = converter.toObject(payload, RefundPaymentEvent.class);
         paymentService.refund(event.getOrder().getTransactionId(), event.getReason());
     }
 }

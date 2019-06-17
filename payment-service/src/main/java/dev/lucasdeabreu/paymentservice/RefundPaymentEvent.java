@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RefundOrderEvent {
+public class RefundPaymentEvent {
     private Order order;
     private String reason;
 }
