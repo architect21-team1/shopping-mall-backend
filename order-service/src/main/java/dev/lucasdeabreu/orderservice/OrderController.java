@@ -17,9 +17,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity create(@RequestBody Order order) {
         log.debug("Post an order {}", order);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(service.createOrder(order));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createOrder(order));
     }
 
     @GetMapping

@@ -10,15 +10,15 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Log4j2
 @Component
-public class OrderCreatedEventListener {
+public class OrderEventListener {
 
     private final RabbitTemplate rabbitTemplate;
     private final Converter converter;
     private final String queueOrderCreateName;
 
-    public OrderCreatedEventListener(RabbitTemplate rabbitTemplate,
-                                     Converter converter,
-                                     @Value("${queue.order-create}") String queueOrderCreateName) {
+    public OrderEventListener(RabbitTemplate rabbitTemplate,
+                              Converter converter,
+                              @Value("${queue.order-create}") String queueOrderCreateName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
         this.queueOrderCreateName = queueOrderCreateName;

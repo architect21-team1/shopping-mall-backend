@@ -1,12 +1,14 @@
-package dev.lucasdeabreu.stockservice;
+package dev.lucasdeabreu.orderservice;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
-public class BilledOrderEvent {
+public class OrderCanceledEvent {
     private Order order;
+    private String reason;
 }
+

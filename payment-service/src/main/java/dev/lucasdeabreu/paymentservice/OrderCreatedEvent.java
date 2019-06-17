@@ -1,4 +1,4 @@
-package dev.lucasdeabreu.stockservice;
+package dev.lucasdeabreu.paymentservice;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BilledOrderEvent {
+public class OrderCreatedEvent {
     private Order order;
 }

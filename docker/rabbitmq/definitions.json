@@ -40,7 +40,14 @@
       "arguments": {}
     },
     {
-      "name": "BILLED_ORDER_CHANGE_STATUS_EVENT",
+      "name": "ORDER_CANCELED_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "REFUND_PAYMENT_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -63,15 +70,6 @@
   ],
   "exchanges": [
     {
-      "name": "BILLED_ORDER_TOPIC",
-      "vhost": "/",
-      "type": "fanout",
-      "durable": true,
-      "auto_delete": false,
-      "internal": false,
-      "arguments": {}
-    },
-    {
       "name": "ORDER_CANCELED_TOPIC",
       "vhost": "/",
       "type": "fanout",
@@ -83,17 +81,17 @@
   ],
   "bindings": [
     {
-      "source": "BILLED_ORDER_TOPIC",
+      "source": "ORDER_CANCELED_TOPIC",
       "vhost": "/",
-      "destination": "BILLED_ORDER_CHANGE_STATUS_EVENT",
+      "destination": "ORDER_CANCELED_EVENT",
       "destination_type": "queue",
       "routing_key": "",
       "arguments": {}
     },
     {
-      "source": "BILLED_ORDER_TOPIC",
+      "source": "ORDER_CANCELED_TOPIC",
       "vhost": "/",
-      "destination": "BILLED_ORDER_EVENT",
+      "destination": "REFUND_PAYMENT_EVENT",
       "destination_type": "queue",
       "routing_key": "",
       "arguments": {}

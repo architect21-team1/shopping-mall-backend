@@ -1,6 +1,5 @@
 package dev.lucasdeabreu.paymentservice;
 
-import dev.lucasdeabreu.paymentservice.order.Order;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,7 +39,7 @@ public class PaymentService {
 
     private Payment createOrder(Order order) {
         return Payment.builder()
-                .paymentStatus(PaymentStatus.BILLED)
+                .paymentStatus(Payment.PaymentStatus.BILLED)
                 .valueBilled(order.getValue())
                 .transactionId(order.getTransactionId())
                 .orderId(order.getId())

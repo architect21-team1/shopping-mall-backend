@@ -29,4 +29,8 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    public enum PaymentStatus {
+        BILLED, CANCEL
+    }
+
 }

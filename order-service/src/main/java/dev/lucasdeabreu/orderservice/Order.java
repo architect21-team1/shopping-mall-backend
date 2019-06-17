@@ -25,4 +25,9 @@ public class Order {
     private BigDecimal value;
 
     private OrderStatus status;
+
+    public enum OrderStatus {
+        NEW, DONE, CANCELED
+    }
+
 }

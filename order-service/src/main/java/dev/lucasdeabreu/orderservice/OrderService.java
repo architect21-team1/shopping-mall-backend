@@ -21,7 +21,7 @@ public class OrderService {
     @Transactional
     public Order createOrder(Order order) {
         order.setTransactionId(UUID.randomUUID().toString());
-        order.setStatus(OrderStatus.PENDING_PAYMENT);
+        order.setStatus(Order.OrderStatus.NEW);
 
         publish(order);
 
@@ -40,16 +40,16 @@ public class OrderService {
     }
 
     @Transactional
-    public void updateOrderAsBilled(Long id) {
-        updateOrderStatus(id, OrderStatus.BILLED);
+    public void updateOrderAsDone(Long id) {
+        updateOrderStatus(id, Order.OrderStatus.DONE);
     }
 
     @Transactional
-    public void updateOrderAsDone(Long id) {
-        updateOrderStatus(id, OrderStatus.DONE);
+    public void updateOrderAsCanceled(Long id) {
+        updateOrderStatus(id, Order.OrderStatus.CANCELED);
     }
 
-    private void updateOrderStatus(Long id, OrderStatus status) {
+    private void updateOrderStatus(Long id, Order.OrderStatus status) {
         log.debug("Updating Order {} to {}", id, status);
         Optional<Order> orderOptional = repository.findById(id);
         if (orderOptional.isPresent()) {

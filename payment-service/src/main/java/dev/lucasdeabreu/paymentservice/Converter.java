@@ -25,7 +25,10 @@ public class Converter {
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Cannot convert " + json + " to object type " + clazz.getSimpleName(), e);
+            throw new IllegalArgumentException("Cannot convert " +
+                    json +
+                    " to object type " +
+                    clazz.getSimpleName(), e);
         }
     }
 }

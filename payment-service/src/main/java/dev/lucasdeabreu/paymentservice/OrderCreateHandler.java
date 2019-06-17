@@ -1,8 +1,6 @@
-package dev.lucasdeabreu.paymentservice.order;
+package dev.lucasdeabreu.paymentservice;
 
-import dev.lucasdeabreu.paymentservice.Converter;
-import dev.lucasdeabreu.paymentservice.PaymentService;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -22,5 +20,4 @@ public class OrderCreateHandler {
         OrderCreatedEvent event = converter.toObject(payload, OrderCreatedEvent.class);
         paymentService.charge(event.getOrder());
     }
-
 }
