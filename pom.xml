@@ -13,11 +13,11 @@
     <name>saga-pattern-example</name>
     <description>An example of saga pattern</description>
 
-
     <modules>
         <module>order-service</module>
         <module>payment-service</module>
         <module>stock-service</module>
+        <module>shared</module>
     </modules>
 
 </project>
