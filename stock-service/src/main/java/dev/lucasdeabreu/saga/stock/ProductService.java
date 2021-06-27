@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -61,5 +62,13 @@ public class ProductService {
             publishCanceledOrder(order);
             return new StockException("Cannot find a product " + order.getProductId());
         });
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    public Product get(Long id) {
+        return productRepository.findById(id).orElse(null);
     }
 }
