@@ -1,5 +1,7 @@
 package dev.lucasdeabreu.saga.payment;
 
+import dev.lucasdeabreu.saga.payment.event.BilledOrderEvent;
+import dev.lucasdeabreu.saga.payment.event.FailPreparedProductEvent;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -7,6 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final CardCompanyRepository cardCompanyRepository;
     private final ApplicationEventPublisher publisher;
     private final TransactionIdHolder transactionIdHolder;
 
@@ -29,10 +33,23 @@ public class PaymentService {
 
         Payment payment = createOrder(order);
 
+        checkPayment(order, payment);
+
         log.debug("Saving payment {}", payment);
         paymentRepository.save(payment);
 
         publish(order);
+    }
+
+    private void checkPayment(Order order, Payment payment) {
+        publishFailPreparedProduct(order);
+        throw new PaymentException("Payment " + payment.getId() + " have a problem.");
+    }
+
+    private void publishFailPreparedProduct(Order order) {
+        FailPreparedProductEvent failPreparedProductEvent = new FailPreparedProductEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        log.debug("Publishing a fail payment event {}", failPreparedProductEvent);
+        publisher.publishEvent(failPreparedProductEvent);
     }
 
     private void publish(Order order) {

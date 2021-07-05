@@ -1,6 +1,8 @@
 package dev.lucasdeabreu.saga.stock;
 
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
+import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
+import dev.lucasdeabreu.saga.stock.event.OrderDoneEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +32,23 @@ public class ProductService {
         publishOrderDone(order);
     }
 
+    @Transactional
+    public void cancelUpdateQuantity(Order order) {
+        log.debug("Start updating product {}", order.getProductId());
+
+        Product product = getProduct(order);
+        cancelUpdateStock(order, product);
+
+        publishOrderCancel(order);
+    }
+
+    private void cancelUpdateStock(Order order, Product product) {
+        product.setQuantity(product.getQuantity() + order.getQuantity());
+        log.debug("Canceling updated product {} with quantity {}", product.getId(), product.getQuantity());
+        productRepository.save(product);
+        publishOrderCancel(order);
+    }
+
     private void updateStock(Order order, Product product) {
         product.setQuantity(product.getQuantity() - order.getQuantity());
         log.debug("Updating product {} with quantity {}", product.getId(), product.getQuantity());
@@ -39,6 +58,12 @@ public class ProductService {
     private void publishOrderDone(Order order) {
         OrderDoneEvent event = new OrderDoneEvent(transactionIdHolder.getCurrentTransactionId(), order);
         log.debug("Publishing order done event {}", event);
+        publisher.publishEvent(event);
+    }
+
+    private void publishOrderCancel(Order order) {
+        OrderCanceledEvent event = new OrderCanceledEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        log.debug("Publishing order cancel event {}", event);
         publisher.publishEvent(event);
     }
 

@@ -1,6 +1,7 @@
 package dev.lucasdeabreu.saga.order;
 
 import dev.lucasdeabreu.saga.order.Order.OrderStatus;
+import dev.lucasdeabreu.saga.order.event.OrderCreatedEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;

@@ -1,5 +1,6 @@
-package dev.lucasdeabreu.saga.order;
+package dev.lucasdeabreu.saga.order.event;
 
+import dev.lucasdeabreu.saga.order.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

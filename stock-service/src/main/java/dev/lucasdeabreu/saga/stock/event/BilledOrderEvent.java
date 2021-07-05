@@ -1,13 +1,14 @@
-package dev.lucasdeabreu.saga.payment;
+package dev.lucasdeabreu.saga.stock.event;
 
+import dev.lucasdeabreu.saga.stock.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
-public class RefundPaymentEvent {
+public class BilledOrderEvent {
     private String transactionId;
     private Order order;
 }

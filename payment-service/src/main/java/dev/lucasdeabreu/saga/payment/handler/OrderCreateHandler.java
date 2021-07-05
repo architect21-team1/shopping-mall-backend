@@ -1,5 +1,8 @@
-package dev.lucasdeabreu.saga.payment;
+package dev.lucasdeabreu.saga.payment.handler;
 
+import dev.lucasdeabreu.saga.payment.PaymentException;
+import dev.lucasdeabreu.saga.payment.PaymentService;
+import dev.lucasdeabreu.saga.payment.event.OrderCreatedEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.*;
@@ -22,6 +25,10 @@ public class OrderCreateHandler {
         log.debug("Handling a created order event {}", payload);
         OrderCreatedEvent event = converter.toObject(payload, OrderCreatedEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
-        paymentService.charge(event.getOrder());
+        try {
+            paymentService.charge(event.getOrder());
+        } catch (PaymentException e) {
+            log.error("Cannot update payment, reason: {}", e.getMessage());
+        }
     }
 }

@@ -1,5 +1,7 @@
-package dev.lucasdeabreu.saga.order;
+package dev.lucasdeabreu.saga.order.handler;
 
+import dev.lucasdeabreu.saga.order.OrderService;
+import dev.lucasdeabreu.saga.order.event.OrderDoneEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
