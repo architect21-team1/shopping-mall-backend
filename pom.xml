@@ -18,6 +18,7 @@
         <module>payment-service</module>
         <module>stock-service</module>
         <module>shared</module>
+        <module>refund-service</module>
     </modules>
 
 </project>
