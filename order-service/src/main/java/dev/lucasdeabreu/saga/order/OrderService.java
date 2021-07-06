@@ -1,7 +1,9 @@
 package dev.lucasdeabreu.saga.order;
 
 import dev.lucasdeabreu.saga.order.Order.OrderStatus;
+import dev.lucasdeabreu.saga.order.event.OrderCancelEvent;
 import dev.lucasdeabreu.saga.order.event.OrderCreatedEvent;
+import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,6 +21,7 @@ public class OrderService {
 
     private final OrderRepository repository;
     private final ApplicationEventPublisher publisher;
+    private final TransactionIdHolder transactionIdHolder;
 
     @Transactional
     public Order createOrder(Order order) {
@@ -39,6 +42,15 @@ public class OrderService {
     public List<Order> findAll() {
         return repository.findAll();
     }
+    public Order findOne(Long orderId) {
+        Optional<Order> order = repository.findById(orderId);
+        if (order.isPresent()) {
+            return order.get();
+        } else {
+            log.error("Cannot update Order to status {}, Order {} not found", OrderStatus.DONE, orderId);
+            return null;
+        }
+    }
 
     @Transactional
     public void updateOrderAsDone(Long orderId) {
@@ -54,6 +66,12 @@ public class OrderService {
     }
 
     @Transactional
+    public void cancelOrderRefund(Refund refund) {
+        cancelOrder(refund.getOrderId());
+        publishOrderCancel(refund);
+    }
+
+    @Transactional
     public void cancelOrder(Long orderId) {
         log.debug("Canceling Order {}", orderId);
         Optional<Order> optionalOrder = repository.findById(orderId);
@@ -65,5 +83,11 @@ public class OrderService {
         } else {
             log.error("Cannot find an Order by transaction {}", orderId);
         }
+    }
+
+    private void publishOrderCancel(Refund refund) {
+        OrderCancelEvent event = new OrderCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
+        log.debug("Publishing an order cancel event {}", event);
+        publisher.publishEvent(event);
     }
 }

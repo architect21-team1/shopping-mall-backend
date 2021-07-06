@@ -3,6 +3,7 @@ package dev.lucasdeabreu.saga.stock;
 import dev.lucasdeabreu.saga.shared.Converter;
 import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
 import dev.lucasdeabreu.saga.stock.event.OrderDoneEvent;
+import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,18 +21,18 @@ public class StockEventListener {
     private final RabbitTemplate rabbitTemplate;
     private final Converter converter;
     private final String queueOrderDoneName;
-    private final String queueOrderCanceledName;
+    private final String queueRefundCompleteName;
     private final String topicOrderCanceledName;
 
     public StockEventListener(RabbitTemplate rabbitTemplate,
                               Converter converter,
                               @Value("${queue.order-done}") String queueOrderDoneName,
-                              @Value("${queue.order-canceled}") String queueOrderCanceledName,
+                              @Value("${queue.refund-complete}") String queueRefundCompleteName,
                               @Value("${topic.order-canceled}") String topicOrderCanceledName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
         this.queueOrderDoneName = queueOrderDoneName;
-        this.queueOrderCanceledName = queueOrderCanceledName;
+        this.queueRefundCompleteName = queueRefundCompleteName;
         this.topicOrderCanceledName = topicOrderCanceledName;
     }
 
@@ -43,9 +44,9 @@ public class StockEventListener {
     }
 
     @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
-    public void onOrderCancelledEvent(OrderCanceledEvent event) {
-        log.debug("Sending order canceled event to {}, event: {}", queueOrderCanceledName, event);
-        rabbitTemplate.convertAndSend(queueOrderCanceledName, converter.toJSON(event));
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onRefundCompleteEvent(RefundCompleteEvent event) {
+        log.debug("Sending refund complete event to {}, event: {}", queueRefundCompleteName, event);
+        rabbitTemplate.convertAndSend(queueRefundCompleteName, converter.toJSON(event));
     }
 }

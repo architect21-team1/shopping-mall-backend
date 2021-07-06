@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @AllArgsConstructor
-public class OrderCreateHandler {
+public class OrderCreatedHandler {
 
     private final Converter converter;
     private final PaymentService paymentService;
     private final TransactionIdHolder transactionIdHolder;
 
-    @RabbitListener(queues = {"${queue.order-create}"})
+    @RabbitListener(queues = {"${queue.order-created}"})
     public void handle(@Payload String payload) {
         log.debug("Handling a created order event {}", payload);
         OrderCreatedEvent event = converter.toObject(payload, OrderCreatedEvent.class);

@@ -1,7 +1,9 @@
 package dev.lucasdeabreu.saga.payment;
 
+import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.BilledOrderEvent;
 import dev.lucasdeabreu.saga.payment.event.FailPreparedProductEvent;
+import dev.lucasdeabreu.saga.refund.Refund;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,7 +35,7 @@ public class PaymentService {
 
         Payment payment = createOrder(order);
 
-        checkPayment(order, payment);
+//        checkPayment(order, payment);
 
         log.debug("Saving payment {}", payment);
         paymentRepository.save(payment);
@@ -67,6 +69,18 @@ public class PaymentService {
     }
 
     @Transactional
+    public void refundPayment(Refund refund) {
+        refund(refund.getOrderId());
+        publish(refund);
+    }
+
+    private void publish(Refund refund) {
+        BillCancelEvent event = new BillCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
+        log.debug("Publishing an bill cancel event {}", event);
+        publisher.publishEvent(event);
+    }
+
+    @Transactional
     public void refund(Long orderId) {
         log.debug("Refund Payment by order id {}", orderId);
         Optional<Payment> paymentOptional = paymentRepository.findByOrderId(orderId);
@@ -79,4 +93,5 @@ public class PaymentService {
             log.error("Cannot find the Payment by order id {} to refund", orderId);
         }
     }
+
 }

@@ -3,11 +3,14 @@ package dev.lucasdeabreu.saga.stock;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
 import dev.lucasdeabreu.saga.stock.event.OrderDoneEvent;
+import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,13 +36,34 @@ public class ProductService {
     }
 
     @Transactional
-    public void cancelUpdateQuantity(Order order) {
+    public void cancelUpdateQuantityOrder(Order order) {
         log.debug("Start updating product {}", order.getProductId());
 
-        Product product = getProduct(order);
-        cancelUpdateStock(order, product);
+        cancelUpdateQuantity(order);
 
         publishOrderCancel(order);
+    }
+
+    @Transactional
+    public void cancelUpdateQuantityRefund(Refund refund) {
+        try {
+            Order order = getOrder(refund.getOrderId());
+            cancelUpdateQuantity(order);
+            publishRefundComplete(refund);
+        } catch(HttpServerErrorException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public void cancelUpdateQuantity(Order order) {
+        Product product = getProduct(order);
+        cancelUpdateStock(order, product);
+    }
+
+    private void publishRefundComplete(Refund refund) {
+        RefundCompleteEvent event = new RefundCompleteEvent(transactionIdHolder.getCurrentTransactionId(), refund);
+        log.debug("Publishing refund complete event {}", event);
+        publisher.publishEvent(event);
     }
 
     private void cancelUpdateStock(Order order, Product product) {
@@ -95,5 +119,13 @@ public class ProductService {
 
     public Product get(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    private Order getOrder(Long orderId) {
+        final String uri = "http://localhost:8081/api/orders/" + orderId ;
+        log.info(uri);
+
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(uri, Order.class);
     }
 }

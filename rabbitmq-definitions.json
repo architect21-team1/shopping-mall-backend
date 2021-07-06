@@ -40,13 +40,6 @@
       "arguments": {}
     },
     {
-      "name": "ORDER_CANCELED_EVENT",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {}
-    },
-    {
       "name": "REFUND_PAYMENT_EVENT",
       "vhost": "/",
       "durable": true,
@@ -69,6 +62,34 @@
     },
     {
       "name": "FAIL_PREPARED_PRODUCT_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "REFUND_CREATE_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "BILL_CANCEL_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "REFUND_COMPLETE_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "ORDER_CANCEL_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,

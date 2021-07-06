@@ -1,5 +1,6 @@
 package dev.lucasdeabreu.saga.order;
 
+import dev.lucasdeabreu.saga.order.event.OrderCancelEvent;
 import dev.lucasdeabreu.saga.order.event.OrderCreatedEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import lombok.extern.log4j.Log4j2;
@@ -16,21 +17,31 @@ public class OrderEventListener {
 
     private final RabbitTemplate rabbitTemplate;
     private final Converter converter;
-    private final String queueOrderCreateName;
+    private final String queueOrderCreatedName;
+    private final String queueOrderCancelName;
 
     public OrderEventListener(RabbitTemplate rabbitTemplate,
                               Converter converter,
-                              @Value("${queue.order-create}") String queueOrderCreateName) {
+                              @Value("${queue.order-created}") String queueOrderCreateName,
+                              @Value("${queue.order-cancel}") String queueOrderCancelName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
-        this.queueOrderCreateName = queueOrderCreateName;
+        this.queueOrderCreatedName = queueOrderCreateName;
+        this.queueOrderCancelName = queueOrderCancelName;
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onCreateEvent(OrderCreatedEvent event) {
-        log.debug("Sending order created event to {}, event: {}", queueOrderCreateName, event);
-        rabbitTemplate.convertAndSend(queueOrderCreateName, converter.toJSON(event));
+        log.debug("Sending order created event to {}, event: {}", queueOrderCreatedName, event);
+        rabbitTemplate.convertAndSend(queueOrderCreatedName, converter.toJSON(event));
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onOrderCancelEvent(OrderCancelEvent event) {
+        log.debug("Sending order created event to {}, event: {}", queueOrderCancelName, event);
+        rabbitTemplate.convertAndSend(queueOrderCancelName, converter.toJSON(event));
     }
 
 }
