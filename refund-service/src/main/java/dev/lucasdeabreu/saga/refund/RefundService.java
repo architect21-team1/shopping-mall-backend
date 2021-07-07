@@ -57,4 +57,16 @@ public class RefundService {
             log.error("Cannot update Order to status {}, Order {} not found", Refund.RefundStatus.DONE, refundId);
         }
     }
+
+    public void cancelRefund(Refund refund) {
+        log.debug("Updating Refund {} to {}", refund.getId(), Refund.RefundStatus.CANCEL);
+        Optional<Refund> refundOptional = repository.findById(refund.getId());
+        if (refundOptional.isPresent()) {
+            Refund refundResult = refundOptional.get();
+            refundResult.setStatus(Refund.RefundStatus.CANCEL);
+            repository.save(refundResult);
+        } else {
+            log.error("Cannot update Order to status {}, Order {} not found", Refund.RefundStatus.CANCEL, refund.getId());
+        }
+    }
 }

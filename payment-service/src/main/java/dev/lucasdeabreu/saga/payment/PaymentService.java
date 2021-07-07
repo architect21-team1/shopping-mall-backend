@@ -2,6 +2,7 @@ package dev.lucasdeabreu.saga.payment;
 
 import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.BilledOrderEvent;
+import dev.lucasdeabreu.saga.payment.event.FailBillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.FailPreparedProductEvent;
 import dev.lucasdeabreu.saga.refund.Refund;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
@@ -11,7 +12,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -70,8 +70,24 @@ public class PaymentService {
 
     @Transactional
     public void refundPayment(Refund refund) {
-        refund(refund.getOrderId());
-        publish(refund);
+        try {
+            occurError(refund);
+            refund(refund.getOrderId());
+            publish(refund);
+        } catch (PaymentException e) {
+            log.error(e.getMessage() + "///");
+            publishFailBillCancel(refund);
+        }
+    }
+
+    private void occurError(Refund refund) {
+        throw new PaymentException("Refund id " + refund.getId() + " have a problem.");
+    }
+
+    private void publishFailBillCancel(Refund refund) {
+        FailBillCancelEvent failBillCancelEvent = new FailBillCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
+        log.debug("Publishing a fail payment event {}", failBillCancelEvent);
+        publisher.publishEvent(failBillCancelEvent);
     }
 
     private void publish(Refund refund) {
