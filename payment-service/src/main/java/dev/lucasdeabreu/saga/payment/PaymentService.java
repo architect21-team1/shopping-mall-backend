@@ -1,9 +1,9 @@
 package dev.lucasdeabreu.saga.payment;
 
 import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
-import dev.lucasdeabreu.saga.payment.event.BilledOrderEvent;
+import dev.lucasdeabreu.saga.payment.event.BillCompleteEvent;
 import dev.lucasdeabreu.saga.payment.event.FailBillCancelEvent;
-import dev.lucasdeabreu.saga.payment.event.FailPreparedProductEvent;
+import dev.lucasdeabreu.saga.payment.event.FailBillCompleteEvent;
 import dev.lucasdeabreu.saga.payment.repository.PaymentRepository;
 import dev.lucasdeabreu.saga.payment.repository.PaymentStatusRepository;
 import dev.lucasdeabreu.saga.refund.Refund;
@@ -42,7 +42,7 @@ public class PaymentService {
             publishBillComplete(order);
         } catch(PaymentException e) {
             log.error(e.getMessage());
-            publishFailPreparedProduct(order);
+            publishFailBillComplete(order);
         }
     }
 
@@ -57,15 +57,15 @@ public class PaymentService {
     }
 
     private void publishBillComplete(Order order) {
-        BilledOrderEvent billedOrderEvent = new BilledOrderEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        BillCompleteEvent billedOrderEvent = new BillCompleteEvent(transactionIdHolder.getCurrentTransactionId(), order);
         log.debug("Publishing a bill complete event {}", billedOrderEvent);
         publisher.publishEvent(billedOrderEvent);
     }
 
-    private void publishFailPreparedProduct(Order order) {
-        FailPreparedProductEvent failPreparedProductEvent = new FailPreparedProductEvent(transactionIdHolder.getCurrentTransactionId(), order);
-        log.debug("Publishing a fail payment event {}", failPreparedProductEvent);
-        publisher.publishEvent(failPreparedProductEvent);
+    private void publishFailBillComplete(Order order) {
+        FailBillCompleteEvent failBillCompleteEvent = new FailBillCompleteEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        log.debug("Publishing a fail bill complete  event {}", failBillCompleteEvent);
+        publisher.publishEvent(failBillCompleteEvent);
     }
 
     private Payment createOrder(Order order) {

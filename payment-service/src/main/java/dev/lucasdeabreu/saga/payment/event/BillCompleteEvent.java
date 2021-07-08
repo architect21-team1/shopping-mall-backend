@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BilledOrderEvent {
+public class BillCompleteEvent {
     private String transactionId;
     private final Order order;
 }

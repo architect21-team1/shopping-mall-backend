@@ -1,9 +1,9 @@
 package dev.lucasdeabreu.saga.payment;
 
 import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
-import dev.lucasdeabreu.saga.payment.event.BilledOrderEvent;
+import dev.lucasdeabreu.saga.payment.event.BillCompleteEvent;
 import dev.lucasdeabreu.saga.payment.event.FailBillCancelEvent;
-import dev.lucasdeabreu.saga.payment.event.FailPreparedProductEvent;
+import dev.lucasdeabreu.saga.payment.event.FailBillCompleteEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -28,7 +28,7 @@ public class BilledOrderEventListener {
                                     Converter converter,
                                     @Value("${queue.bill-complete}") String queueBilledOrderName,
                                     @Value("${queue.bill-cancel}") String queueBillCancelName,
-                                    @Value("${queue.fail-bill-cancel}") String queueFailBillCancelName,
+                                    @Value("${queue.fail-bill-complete}") String queueFailBillCancelName,
                                     @Value("${queue.fail-prepared-product}") String queueFailPreparedProductName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
@@ -40,7 +40,7 @@ public class BilledOrderEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onBilledOrderEvent(BilledOrderEvent event) {
+    public void onBilledOrderEvent(BillCompleteEvent event) {
         log.debug("Sending billed order event to {}, event: {}", queueBilledOrderName, event);
         rabbitTemplate.convertAndSend(queueBilledOrderName, converter.toJSON(event));
     }
@@ -54,7 +54,7 @@ public class BilledOrderEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
-    public void onFailPreparedProductEvent(FailPreparedProductEvent event) {
+    public void onFailPreparedProductEvent(FailBillCompleteEvent event) {
         log.debug("Sending fail prepared product event to {}, event: {}", queueFailPreparedProductName, event);
         rabbitTemplate.convertAndSend(queueFailPreparedProductName, converter.toJSON(event));
     }

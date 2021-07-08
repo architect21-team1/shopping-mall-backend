@@ -54,6 +54,13 @@
       "arguments": {}
     },
     {
+      "name": "FAIL_BILL_COMPLETE_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
       "name": "REFUND_PAYMENT_EVENT",
       "vhost": "/",
       "durable": true,
@@ -90,13 +97,6 @@
     },
     {
       "name": "ORDER_CANCEL_EVENT",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {}
-    },
-    {
-      "name": "FAIL_BILL_CANCEL_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,

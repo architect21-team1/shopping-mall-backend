@@ -20,7 +20,7 @@ public class FailBillCancelHandler {
     private final RefundService refundService;
     private final TransactionIdHolder transactionIdHolder;
 
-    @RabbitListener(queues = {"${queue.fail-bill-cancel}"})
+    @RabbitListener(queues = {"${queue.fail-bill-complete}"})
     public void handle(@Payload String payload) {
         log.debug("Handling a fail bill cancel event {}", payload);
         FailBillCancelEvent event = converter.toObject(payload, FailBillCancelEvent.class);
