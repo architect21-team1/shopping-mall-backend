@@ -2,7 +2,7 @@ package dev.lucasdeabreu.saga.stock.handler;
 
 import dev.lucasdeabreu.saga.shared.Converter;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
-import dev.lucasdeabreu.saga.stock.ProductService;
+import dev.lucasdeabreu.saga.stock.StockService;
 import dev.lucasdeabreu.saga.stock.StockException;
 import dev.lucasdeabreu.saga.stock.event.BillCancelEvent;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class BillCancelHandler {
 
     private final Converter converter;
-    private final ProductService productService;
+    private final StockService stockService;
     private final TransactionIdHolder transactionIdHolder;
 
     @RabbitListener(queues = {"${queue.bill-cancel}"})
@@ -26,7 +26,7 @@ public class BillCancelHandler {
         BillCancelEvent event = converter.toObject(payload, BillCancelEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
         try {
-            productService.cancelUpdateQuantityRefund(event.getRefund());
+            stockService.cancelUpdateQuantityRefund(event.getRefund());
         } catch (StockException e) {
             log.error("Cannot update stock, reason: {}", e.getMessage());
         }

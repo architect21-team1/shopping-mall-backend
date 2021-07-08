@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BilledOrderEvent {
+public class BillCompleteEvent {
     private String transactionId;
     private Order order;
 }

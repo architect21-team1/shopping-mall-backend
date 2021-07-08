@@ -2,7 +2,7 @@ package dev.lucasdeabreu.saga.stock;
 
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
-import dev.lucasdeabreu.saga.stock.event.OrderDoneEvent;
+import dev.lucasdeabreu.saga.stock.event.OrderCompleteEvent;
 import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
 import dev.lucasdeabreu.saga.stock.repository.ProductRepository;
 import dev.lucasdeabreu.saga.stock.repository.StockStatusRepository;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Log4j2
 @AllArgsConstructor
 @Service
-public class ProductService {
+public class StockService {
 
     private final ProductRepository productRepository;
     private final StockStatusRepository stockStatusRepository;
@@ -29,13 +29,40 @@ public class ProductService {
 
     @Transactional
     public void updateQuantity(Order order) {
-        log.debug("Start updating product {}", order.getProductId());
+        try {
+            log.debug("Start updating product {}", order.getProductId());
 
-        Product product = getProduct(order);
-        checkStock(order, product);
-        updateStock(order, product);
+            Product product = getProduct(order);
 
-        publishOrderDone(order);
+            checkStock(product);
+            updateStock(order, product);
+
+            publishOrderComplete(order);
+        } catch(StockException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void checkStock(Product product) {
+        Optional<StockStatus> stockStatusOptional = stockStatusRepository.findById("stock");
+        if (stockStatusOptional.isPresent()) {
+            StockStatus stockStatus = stockStatusOptional.get();
+            if (stockStatus.getStockStatus() == StockStatus.Status.ORDER_STOCK_FAIL) {
+                throw new StockException("Product " + product.getId() + " have a problem.");
+            }
+        }
+    }
+
+    private void updateStock(Order order, Product product) {
+        product.setQuantity(product.getQuantity() - order.getQuantity());
+        log.debug("Updating product {} with quantity {}", product.getId(), product.getQuantity());
+        productRepository.save(product);
+    }
+
+    private void publishOrderComplete(Order order) {
+        OrderCompleteEvent event = new OrderCompleteEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        log.debug("Publishing order done event {}", event);
+        publisher.publishEvent(event);
     }
 
     @Transactional
@@ -80,30 +107,10 @@ public class ProductService {
         publishOrderCancel(order);
     }
 
-    private void updateStock(Order order, Product product) {
-        product.setQuantity(product.getQuantity() - order.getQuantity());
-        log.debug("Updating product {} with quantity {}", product.getId(), product.getQuantity());
-        productRepository.save(product);
-    }
-
-    private void publishOrderDone(Order order) {
-        OrderDoneEvent event = new OrderDoneEvent(transactionIdHolder.getCurrentTransactionId(), order);
-        log.debug("Publishing order done event {}", event);
-        publisher.publishEvent(event);
-    }
-
     private void publishOrderCancel(Order order) {
         OrderCanceledEvent event = new OrderCanceledEvent(transactionIdHolder.getCurrentTransactionId(), order);
         log.debug("Publishing order cancel event {}", event);
         publisher.publishEvent(event);
-    }
-
-    private void checkStock(Order order, Product product) {
-        log.debug("Checking, products available {}, products ordered {}", product.getQuantity(), order.getQuantity());
-        if (product.getQuantity() < order.getQuantity()) {
-            publishCanceledOrder(order);
-            throw new StockException("Product " + product.getId() + " is out of stock");
-        }
     }
 
     private void publishCanceledOrder(Order order) {

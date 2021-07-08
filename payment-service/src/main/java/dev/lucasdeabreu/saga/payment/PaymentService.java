@@ -58,7 +58,7 @@ public class PaymentService {
 
     private void publishBillComplete(Order order) {
         BilledOrderEvent billedOrderEvent = new BilledOrderEvent(transactionIdHolder.getCurrentTransactionId(), order);
-        log.debug("Publishing a bill completes event {}", billedOrderEvent);
+        log.debug("Publishing a bill complete event {}", billedOrderEvent);
         publisher.publishEvent(billedOrderEvent);
     }
 

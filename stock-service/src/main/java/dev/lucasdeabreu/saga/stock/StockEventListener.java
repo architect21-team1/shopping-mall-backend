@@ -1,8 +1,7 @@
 package dev.lucasdeabreu.saga.stock;
 
 import dev.lucasdeabreu.saga.shared.Converter;
-import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
-import dev.lucasdeabreu.saga.stock.event.OrderDoneEvent;
+import dev.lucasdeabreu.saga.stock.event.OrderCompleteEvent;
 import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -41,7 +40,7 @@ public class StockEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onOrderDoneEvent(OrderDoneEvent event) {
+    public void onOrderDoneEvent(OrderCompleteEvent event) {
         log.debug("Sending order done event to {}, event: {}", queueOrderDoneName, event);
         rabbitTemplate.convertAndSend(queueOrderDoneName, converter.toJSON(event));
     }

@@ -1,7 +1,7 @@
 package dev.lucasdeabreu.saga.stock.handler;
 
 import dev.lucasdeabreu.saga.shared.Converter;
-import dev.lucasdeabreu.saga.stock.ProductService;
+import dev.lucasdeabreu.saga.stock.StockService;
 import dev.lucasdeabreu.saga.stock.StockException;
 import dev.lucasdeabreu.saga.stock.event.FailPreparedProductEvent;
 import lombok.AllArgsConstructor;
@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 public class FailPreparedProductHandler {
 
     private final Converter converter;
-    private final ProductService productService;
+    private final StockService stockService;
 
     @RabbitListener(queues = {"${queue.fail-prepared-product}"})
     public void handle(@Payload String payload) {
         log.debug("Handling a fail prepared product event {}", payload);
         FailPreparedProductEvent event = converter.toObject(payload, FailPreparedProductEvent.class);
         try {
-            productService.cancelUpdateQuantityOrder(event.getOrder());
+            stockService.cancelUpdateQuantityOrder(event.getOrder());
         } catch (StockException e) {
             log.error("Cannot update stock, reason: {}", e.getMessage());
         }
