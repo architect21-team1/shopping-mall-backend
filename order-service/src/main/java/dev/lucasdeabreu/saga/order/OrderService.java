@@ -78,7 +78,7 @@ public class OrderService {
         Optional<Order> optionalOrder = repository.findById(orderId);
         if (optionalOrder.isPresent()) {
             Order order = optionalOrder.get();
-            order.setStatus(OrderStatus.CANCELED);
+            order.setStatus(OrderStatus.CANCEL);
             repository.save(order);
             log.debug("Order {} was canceled", order.getId());
         } else {

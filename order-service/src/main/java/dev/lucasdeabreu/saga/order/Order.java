@@ -25,7 +25,7 @@ public class Order {
     private OrderStatus status;
 
     public enum OrderStatus {
-        NEW, DONE, CANCELED
+        NEW, DONE, CANCEL
     }
 
 }

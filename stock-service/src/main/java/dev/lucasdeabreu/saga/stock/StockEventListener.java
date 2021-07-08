@@ -19,20 +19,20 @@ public class StockEventListener {
 
     private final RabbitTemplate rabbitTemplate;
     private final Converter converter;
-    private final String queueOrderDoneName;
+    private final String queueOrderCompleteName;
     private final String queueRefundCompleteName;
     private final String queueFailRefundCompleteName;
     private final String topicOrderCanceledName;
 
     public StockEventListener(RabbitTemplate rabbitTemplate,
                               Converter converter,
-                              @Value("${queue.order-done}") String queueOrderDoneName,
+                              @Value("${queue.order-complete}") String queueOrderCompleteName,
                               @Value("${queue.refund-complete}") String queueRefundCompleteName,
                               @Value("${queue.fail-refund-complete}") String queueFailRefundCompleteName,
                               @Value("${topic.order-canceled}") String topicOrderCanceledName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
-        this.queueOrderDoneName = queueOrderDoneName;
+        this.queueOrderCompleteName = queueOrderCompleteName;
         this.queueRefundCompleteName = queueRefundCompleteName;
         this.queueFailRefundCompleteName = queueFailRefundCompleteName;
         this.topicOrderCanceledName = topicOrderCanceledName;
@@ -40,9 +40,9 @@ public class StockEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onOrderDoneEvent(OrderCompleteEvent event) {
-        log.debug("Sending order done event to {}, event: {}", queueOrderDoneName, event);
-        rabbitTemplate.convertAndSend(queueOrderDoneName, converter.toJSON(event));
+    public void onOrderCompleteEvent(OrderCompleteEvent event) {
+        log.debug("Sending order complete event to {}, event: {}", queueOrderCompleteName, event);
+        rabbitTemplate.convertAndSend(queueOrderCompleteName, converter.toJSON(event));
     }
 
     @Async

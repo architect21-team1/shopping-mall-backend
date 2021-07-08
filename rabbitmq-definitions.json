@@ -47,14 +47,14 @@
       "arguments": {}
     },
     {
-      "name": "REFUND_PAYMENT_EVENT",
+      "name": "ORDER_COMPLETE_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {}
     },
     {
-      "name": "ORDER_DONE_EVENT",
+      "name": "REFUND_PAYMENT_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
