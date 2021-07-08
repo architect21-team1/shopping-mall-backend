@@ -22,7 +22,7 @@ public class OrderEventListener {
 
     public OrderEventListener(RabbitTemplate rabbitTemplate,
                               Converter converter,
-                              @Value("${queue.order-created}") String queueOrderCreateName,
+                              @Value("${queue.order-create}") String queueOrderCreateName,
                               @Value("${queue.order-cancel}") String queueOrderCancelName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
@@ -32,7 +32,7 @@ public class OrderEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onCreateEvent(OrderCreatedEvent event) {
+    public void onOrderCreateEvent(OrderCreatedEvent event) {
         log.debug("Sending order created event to {}, event: {}", queueOrderCreatedName, event);
         rabbitTemplate.convertAndSend(queueOrderCreatedName, converter.toJSON(event));
     }

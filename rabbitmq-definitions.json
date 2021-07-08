@@ -33,7 +33,7 @@
   "policies": [],
   "queues": [
     {
-      "name": "ORDER_CREATED_EVENT",
+      "name": "ORDER_CREATE_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,

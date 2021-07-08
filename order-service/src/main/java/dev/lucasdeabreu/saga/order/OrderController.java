@@ -17,19 +17,19 @@ public class OrderController {
     private final OrderService service;
 
     @PostMapping
-    public ResponseEntity<Order> create(@RequestBody Order order) {
+    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
         log.debug("Creating a new {}", order);
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createOrder(order));
     }
 
     @GetMapping
     public ResponseEntity<List<Order>> getAll() {
-        return ResponseEntity.ok().body(service.findAll());
+        return ResponseEntity.ok().body(service.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrder(@PathVariable Long id) {
         log.debug("===>" + id);
-        return ResponseEntity.ok().body(service.findOne(id));
+        return ResponseEntity.ok().body(service.getOrder(id));
     }
 }

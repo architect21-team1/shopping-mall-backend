@@ -39,10 +39,11 @@ public class OrderService {
         publisher.publishEvent(event);
     }
 
-    public List<Order> findAll() {
+    public List<Order> getAll() {
         return repository.findAll();
     }
-    public Order findOne(Long orderId) {
+
+    public Order getOrder(Long orderId) {
         Optional<Order> order = repository.findById(orderId);
         if (order.isPresent()) {
             return order.get();

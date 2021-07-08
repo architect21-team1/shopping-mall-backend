@@ -20,7 +20,7 @@ public class OrderCreatedHandler {
     private final PaymentService paymentService;
     private final TransactionIdHolder transactionIdHolder;
 
-    @RabbitListener(queues = {"${queue.order-created}"})
+    @RabbitListener(queues = {"${queue.order-create}"})
     public void handle(@Payload String payload) {
         log.debug("Handling a created order event {}", payload);
         OrderCreatedEvent event = converter.toObject(payload, OrderCreatedEvent.class);
