@@ -3,7 +3,6 @@ package dev.lucasdeabreu.saga.stock.handler;
 import dev.lucasdeabreu.saga.shared.Converter;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import dev.lucasdeabreu.saga.stock.StockService;
-import dev.lucasdeabreu.saga.stock.StockException;
 import dev.lucasdeabreu.saga.stock.event.BillCancelEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,11 +24,7 @@ public class BillCancelHandler {
         log.debug("Handling a bill cancel event {}", payload);
         BillCancelEvent event = converter.toObject(payload, BillCancelEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
-        try {
-            stockService.cancelUpdateQuantityRefund(event.getRefund());
-        } catch (StockException e) {
-            log.error("Cannot update stock, reason: {}", e.getMessage());
-        }
+        stockService.refundComplete(event.getRefund());
     }
 
 

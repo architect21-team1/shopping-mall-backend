@@ -69,30 +69,25 @@ public class StockService {
     public void cancelUpdateQuantityOrder(Order order) {
         log.debug("Start updating product {}", order.getProductId());
 
-        cancelUpdateQuantity(order);
+//        cancelUpdateQuantity(order);
 
         publishOrderCancel(order);
     }
 
     @Transactional
-    public void cancelUpdateQuantityRefund(Refund refund) {
+    public void refundComplete(Refund refund) {
         try {
             Order order = getOrder(refund.getOrderId());
-            cancelUpdateQuantity(order);
+            Product product = getProduct(order);
+
+            cancelUpdateStock(order, product);
+
             publishRefundComplete(refund);
         } catch(HttpServerErrorException e) {
             log.error(e.getMessage());
         }
     }
 
-    public void cancelUpdateQuantity(Order order) {
-        Product product = getProduct(order);
-        cancelUpdateStock(order, product);
-    }
-
-    public void occurError() {
-//        throw new StockException();
-    }
 
     private void publishRefundComplete(Refund refund) {
         RefundCompleteEvent event = new RefundCompleteEvent(transactionIdHolder.getCurrentTransactionId(), refund);

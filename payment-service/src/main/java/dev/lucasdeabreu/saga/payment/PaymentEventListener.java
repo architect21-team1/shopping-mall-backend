@@ -15,7 +15,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Log4j2
 @Component
-public class BilledOrderEventListener {
+public class PaymentEventListener {
 
     private final RabbitTemplate rabbitTemplate;
     private final Converter converter;
@@ -24,12 +24,12 @@ public class BilledOrderEventListener {
     private final String queueFailBillCancelName;
     private final String queueFailPreparedProductName;
 
-    public BilledOrderEventListener(RabbitTemplate rabbitTemplate,
-                                    Converter converter,
-                                    @Value("${queue.bill-complete}") String queueBilledOrderName,
-                                    @Value("${queue.bill-cancel}") String queueBillCancelName,
-                                    @Value("${queue.fail-bill-complete}") String queueFailBillCancelName,
-                                    @Value("${queue.fail-prepared-product}") String queueFailPreparedProductName) {
+    public PaymentEventListener(RabbitTemplate rabbitTemplate,
+                                Converter converter,
+                                @Value("${queue.bill-complete}") String queueBilledOrderName,
+                                @Value("${queue.bill-cancel}") String queueBillCancelName,
+                                @Value("${queue.fail-bill-complete}") String queueFailBillCancelName,
+                                @Value("${queue.fail-prepared-product}") String queueFailPreparedProductName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
         this.queueBilledOrderName = queueBilledOrderName;

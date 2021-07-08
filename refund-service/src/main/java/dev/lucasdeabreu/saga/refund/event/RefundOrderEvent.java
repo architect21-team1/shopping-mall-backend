@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @ToString
-public class RefundCreateEvent {
+public class RefundOrderEvent {
     private String transactionId;
     private Refund refund;
 }

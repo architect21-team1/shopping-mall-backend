@@ -1,5 +1,6 @@
 package dev.lucasdeabreu.saga.order.handler;
 
+import dev.lucasdeabreu.saga.order.Order;
 import dev.lucasdeabreu.saga.order.OrderService;
 import dev.lucasdeabreu.saga.order.event.OrderCompleteEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
@@ -18,9 +19,9 @@ public class OrderCompleteEventHandler {
     private final OrderService orderService;
 
     @RabbitListener(queues = {"${queue.order-complete}"})
-    public void handleOrderDoneEvent(@Payload String payload) {
+    public void orderComplete(@Payload String payload) {
         log.debug("Handling a order complete event {}", payload);
         OrderCompleteEvent event = converter.toObject(payload, OrderCompleteEvent.class);
-        orderService.updateOrderAsDone(event.getOrder().getId());
+        orderService.orderComplete(event.getOrder().getId());
     }
 }

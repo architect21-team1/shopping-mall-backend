@@ -17,7 +17,7 @@ public class RefundController {
     private final RefundService service;
 
     @PostMapping
-    public ResponseEntity<Refund> create(@RequestBody Order order) {
+    public ResponseEntity<Refund> createRefund(@RequestBody Order order) {
         log.debug("Creating a new {}", order);
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createRefund(order));
     }

@@ -1,6 +1,6 @@
 package dev.lucasdeabreu.saga.refund;
 
-import dev.lucasdeabreu.saga.refund.event.RefundCreateEvent;
+import dev.lucasdeabreu.saga.refund.event.RefundOrderEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,7 +20,7 @@ public class RefundEventListener {
 
     public RefundEventListener(RabbitTemplate rabbitTemplate,
                                Converter converter,
-                               @Value("${queue.refund-create}") String queueRefundCreateName) {
+                               @Value("${queue.refund-order}") String queueRefundCreateName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
         this.queueRefundCreateName = queueRefundCreateName;
@@ -28,7 +28,7 @@ public class RefundEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onRefundCreateEvent(RefundCreateEvent event) {
+    public void onRefundCreateEvent(RefundOrderEvent event) {
         log.debug("Sending refund created event to {}, event: {}", queueRefundCreateName, event);
         rabbitTemplate.convertAndSend(queueRefundCreateName, converter.toJSON(event));
     }

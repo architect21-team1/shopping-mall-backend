@@ -1,5 +1,6 @@
 package dev.lucasdeabreu.saga.order;
 
+import dev.lucasdeabreu.saga.OrderException;
 import dev.lucasdeabreu.saga.order.Order.OrderStatus;
 import dev.lucasdeabreu.saga.order.event.OrderCancelEvent;
 import dev.lucasdeabreu.saga.order.event.OrderCreatedEvent;
@@ -39,6 +40,13 @@ public class OrderService {
         publisher.publishEvent(event);
     }
 
+    // 주문 처리 - 정상
+    @Transactional
+    public void orderComplete(Long orderId) {
+        Order order = updateOrderStatus(orderId, OrderStatus.DONE);
+        repository.save(order);
+    }
+
     public List<Order> getAll() {
         return repository.findAll();
     }
@@ -53,27 +61,40 @@ public class OrderService {
         }
     }
 
+    // 환불처리 - 정상
     @Transactional
-    public void updateOrderAsDone(Long orderId) {
-        log.debug("Updating Order {} to {}", orderId, OrderStatus.DONE);
-        Optional<Order> orderOptional = repository.findById(orderId);
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            order.setStatus(OrderStatus.DONE);
+    public void orderCancel(Refund refund) {
+        try {
+            Order order = updateOrderStatus(refund.getOrderId(), OrderStatus.CANCEL);
+
+            publishOrderCancel(refund);
+
             repository.save(order);
-        } else {
-            log.error("Cannot update Order to status {}, Order {} not found", OrderStatus.DONE, orderId);
+        } catch(OrderException e) {
+            log.error(e.getMessage());
         }
     }
 
-    @Transactional
-    public void cancelOrderRefund(Refund refund) {
-        cancelOrder(refund.getOrderId());
-        publishOrderCancel(refund);
+    private Order updateOrderStatus(Long orderId, OrderStatus orderStatus) {
+        log.debug("Updating Order {} to {}", orderId, orderStatus);
+        Optional<Order> orderOptional = repository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus(orderStatus);
+            return order;
+        } else {
+            throw new OrderException("Cannot update Order to status " + orderStatus + "Order " + orderId + " not found");
+        }
+    }
+
+    private void publishOrderCancel(Refund refund) {
+        OrderCancelEvent event = new OrderCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
+        log.debug("Publishing an order created event {}", event);
+        publisher.publishEvent(event);
     }
 
     @Transactional
-    public void cancelOrder(Long orderId) {
+    public void orderCancel(Long orderId) {
         log.debug("Canceling Order {}", orderId);
         Optional<Order> optionalOrder = repository.findById(orderId);
         if (optionalOrder.isPresent()) {
@@ -86,9 +107,4 @@ public class OrderService {
         }
     }
 
-    private void publishOrderCancel(Refund refund) {
-        OrderCancelEvent event = new OrderCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
-        log.debug("Publishing an order cancel event {}", event);
-        publisher.publishEvent(event);
-    }
 }

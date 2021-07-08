@@ -2,8 +2,6 @@ package dev.lucasdeabreu.saga.order.handler;
 
 import dev.lucasdeabreu.saga.order.OrderService;
 import dev.lucasdeabreu.saga.order.event.OrderCancelEvent;
-import dev.lucasdeabreu.saga.order.event.OrderCanceledEvent;
-import dev.lucasdeabreu.saga.order.event.RefundCompleteEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.AllArgsConstructor;
@@ -26,6 +24,6 @@ public class RefundCompleteEventHandler {
         log.debug("Handling a refund complete event {}", payload);
         OrderCancelEvent event = converter.toObject(payload, OrderCancelEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
-        orderService.cancelOrderRefund(event.getRefund());
+        orderService.orderCancel(event.getRefund());
     }
 }
