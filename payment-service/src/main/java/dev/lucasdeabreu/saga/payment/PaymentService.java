@@ -80,9 +80,7 @@ public class PaymentService {
     public void billCancel(Refund refund) {
         log.debug("Bill cancel order {}", refund.getOrderId());
         try {
-            Payment payment = cancelPayment(refund.getOrderId());
-
-            checkCancelPayment(refund.getId(), refund.getOrderId(), payment.getId());
+            Payment payment = getPayment(refund.getId(), refund.getOrderId());
 
             paymentRepository.save(payment);
 
@@ -93,7 +91,14 @@ public class PaymentService {
         }
     }
 
-    private Payment cancelPayment(Long orderId) {
+    private Payment getPayment(Long refundId, Long orderId) {
+        Optional<PaymentStatus> paymentStatusOptional = paymentStatusRepository.findById("payment");
+        if (paymentStatusOptional.isPresent()) {
+            PaymentStatus paymentStatus = paymentStatusOptional.get();
+            if (paymentStatus.getPaymentStatus().equals(PaymentStatus.Status.REFUND_PAYMENT_FAIL)) {
+                throw new PaymentException("[Refund] Payment [refundId: " + refundId + ", orderId: " + orderId + "] have a problem.");
+            }
+        }
         log.debug("Refund Payment by order id {}", orderId);
         Optional<Payment> paymentOptional = paymentRepository.findByOrderId(orderId);
         if (paymentOptional.isPresent()) {
@@ -102,16 +107,6 @@ public class PaymentService {
             return payment;
         } else {
             throw new PaymentException("Cannot find the Payment by order id " +  orderId + " to refund");
-        }
-    }
-
-    private void checkCancelPayment(Long refundId, Long orderId, Long paymentId) {
-        Optional<PaymentStatus> paymentStatusOptional = paymentStatusRepository.findById("payment");
-        if (paymentStatusOptional.isPresent()) {
-            PaymentStatus paymentStatus = paymentStatusOptional.get();
-            if (paymentStatus.getPaymentStatus().equals(PaymentStatus.Status.REFUND_PAYMENT_FAIL)) {
-                throw new PaymentException("[Refund] Payment [refundId: " + refundId + ", paymentId: " + paymentId + ", orderId: " + orderId + "] have a problem.");
-            }
         }
     }
 

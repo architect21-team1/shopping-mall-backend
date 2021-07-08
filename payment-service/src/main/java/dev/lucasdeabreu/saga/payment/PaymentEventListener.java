@@ -2,6 +2,7 @@ package dev.lucasdeabreu.saga.payment;
 
 import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.BillCompleteEvent;
+import dev.lucasdeabreu.saga.payment.event.FailBillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.FailOrderCompleteEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import lombok.extern.log4j.Log4j2;
@@ -24,12 +25,14 @@ public class PaymentEventListener {
     private final String queueBillCancelName;
     private final String queueFailOrderCompleteName;
     private final String queueFailPreparedProductName;
+    private final String queueFailBillCancelName;
 
     public PaymentEventListener(RabbitTemplate rabbitTemplate,
                                 Converter converter,
                                 @Value("${queue.bill-complete}") String queueBilledOrderName,
                                 @Value("${queue.bill-cancel}") String queueBillCancelName,
                                 @Value("${queue.fail-order-complete}") String queueFailOrderCompleteName,
+                                @Value("${queue.fail-bill-cancel}") String queueFailBillCancelName,
                                 @Value("${queue.fail-prepared-product}") String queueFailPreparedProductName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
@@ -37,6 +40,7 @@ public class PaymentEventListener {
         this.queueBillCancelName = queueBillCancelName;
         this.queueFailOrderCompleteName = queueFailOrderCompleteName;
         this.queueFailPreparedProductName = queueFailPreparedProductName;
+        this.queueFailBillCancelName = queueFailBillCancelName;
     }
 
     @Async
@@ -65,5 +69,12 @@ public class PaymentEventListener {
     public void onFailOrderComplete(FailOrderCompleteEvent event) {
         log.debug("Sending fail bill complete event to {}, event: {}", queueFailOrderCompleteName, event);
         rabbitTemplate.convertAndSend(queueFailOrderCompleteName, converter.toJSON(event));
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onFailBilCancel(FailBillCancelEvent event) {
+        log.debug("Sending fail bill complete event to {}, event: {}", queueFailBillCancelName, event);
+        rabbitTemplate.convertAndSend(queueFailBillCancelName, converter.toJSON(event));
     }
 }
