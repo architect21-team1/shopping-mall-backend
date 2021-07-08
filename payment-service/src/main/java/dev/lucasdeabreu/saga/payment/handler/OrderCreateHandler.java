@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @AllArgsConstructor
-public class OrderCreatedHandler {
+public class OrderCreateHandler {
 
     private final Converter converter;
     private final PaymentService paymentService;
@@ -26,7 +26,7 @@ public class OrderCreatedHandler {
         OrderCreatedEvent event = converter.toObject(payload, OrderCreatedEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
         try {
-            paymentService.charge(event.getOrder());
+            paymentService.bill(event.getOrder());
         } catch (PaymentException e) {
             log.error("Cannot update payment, reason: {}", e.getMessage());
         }

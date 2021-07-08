@@ -28,39 +28,44 @@ public class PaymentService {
     private final TransactionIdHolder transactionIdHolder;
 
     @Transactional
-    public void charge(Order order) {
+    public void bill(Order order) {
         log.debug("Charging order {}", order);
 
-        /*
-         * Any business logic to confirm charge
-         * ...
-         */
+        try {
+            Payment payment = createOrder(order);
 
-        Payment payment = createOrder(order);
+            checkPayment(payment);
 
-//        checkPayment(order, payment);
+            log.debug("Saving payment {}", payment);
+            paymentRepository.save(payment);
 
-        log.debug("Saving payment {}", payment);
-        paymentRepository.save(payment);
-
-        publish(order);
+            publishBillComplete(order);
+        } catch(PaymentException e) {
+            log.error(e.getMessage());
+            publishFailPreparedProduct(order);
+        }
     }
 
-    private void checkPayment(Order order, Payment payment) {
-        publishFailPreparedProduct(order);
-        throw new PaymentException("Payment " + payment.getId() + " have a problem.");
+    private void checkPayment(Payment payment) {
+        Optional<PaymentStatus> paymentStatusOptional = paymentStatusRepository.findById("payment");
+        if (paymentStatusOptional.isPresent()) {
+            PaymentStatus paymentStatus = paymentStatusOptional.get();
+            if (paymentStatus.getPaymentStatus().equals(PaymentStatus.Status.ORDER_PAYMENT_FAIL)) {
+                throw new PaymentException("Payment " + payment.getId() + " have a problem.");
+            }
+        }
+    }
+
+    private void publishBillComplete(Order order) {
+        BilledOrderEvent billedOrderEvent = new BilledOrderEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        log.debug("Publishing a bill completes event {}", billedOrderEvent);
+        publisher.publishEvent(billedOrderEvent);
     }
 
     private void publishFailPreparedProduct(Order order) {
         FailPreparedProductEvent failPreparedProductEvent = new FailPreparedProductEvent(transactionIdHolder.getCurrentTransactionId(), order);
         log.debug("Publishing a fail payment event {}", failPreparedProductEvent);
         publisher.publishEvent(failPreparedProductEvent);
-    }
-
-    private void publish(Order order) {
-        BilledOrderEvent billedOrderEvent = new BilledOrderEvent(transactionIdHolder.getCurrentTransactionId(), order);
-        log.debug("Publishing a billed order event {}", billedOrderEvent);
-        publisher.publishEvent(billedOrderEvent);
     }
 
     private Payment createOrder(Order order) {
@@ -76,7 +81,7 @@ public class PaymentService {
         try {
             occurError(refund);
             refund(refund.getOrderId());
-            publish(refund);
+            publishBillComplete(refund);
         } catch (PaymentException e) {
             log.error(e.getMessage() + "///");
             publishFailBillCancel(refund);
@@ -93,7 +98,7 @@ public class PaymentService {
         publisher.publishEvent(failBillCancelEvent);
     }
 
-    private void publish(Refund refund) {
+    private void publishBillComplete(Refund refund) {
         BillCancelEvent event = new BillCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
         log.debug("Publishing an bill cancel event {}", event);
         publisher.publishEvent(event);

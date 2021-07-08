@@ -40,6 +40,13 @@
       "arguments": {}
     },
     {
+      "name": "BILL_COMPLETE_EVENT",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
       "name": "REFUND_PAYMENT_EVENT",
       "vhost": "/",
       "durable": true,
@@ -48,13 +55,6 @@
     },
     {
       "name": "ORDER_DONE_EVENT",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": {}
-    },
-    {
-      "name": "BILLED_ORDER_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,

@@ -20,7 +20,7 @@ public class BilledOrderHandler {
     private final ProductService productService;
     private final TransactionIdHolder transactionIdHolder;
 
-    @RabbitListener(queues = {"${queue.billed-order}"})
+    @RabbitListener(queues = {"${queue.bill-complete}"})
     public void handle(@Payload String payload) {
         log.debug("Handling a billed order event {}", payload);
         BilledOrderEvent event = converter.toObject(payload, BilledOrderEvent.class);

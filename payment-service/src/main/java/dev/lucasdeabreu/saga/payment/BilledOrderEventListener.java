@@ -26,7 +26,7 @@ public class BilledOrderEventListener {
 
     public BilledOrderEventListener(RabbitTemplate rabbitTemplate,
                                     Converter converter,
-                                    @Value("${queue.billed-order}") String queueBilledOrderName,
+                                    @Value("${queue.bill-complete}") String queueBilledOrderName,
                                     @Value("${queue.bill-cancel}") String queueBillCancelName,
                                     @Value("${queue.fail-bill-cancel}") String queueFailBillCancelName,
                                     @Value("${queue.fail-prepared-product}") String queueFailPreparedProductName) {
