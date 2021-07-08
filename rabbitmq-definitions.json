@@ -54,7 +54,7 @@
       "arguments": {}
     },
     {
-      "name": "FAIL_BILL_COMPLETE_EVENT",
+      "name": "FAIL_ORDER_COMPLETE_EVENT",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,

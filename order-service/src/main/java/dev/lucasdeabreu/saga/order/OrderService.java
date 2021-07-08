@@ -3,7 +3,7 @@ package dev.lucasdeabreu.saga.order;
 import dev.lucasdeabreu.saga.OrderException;
 import dev.lucasdeabreu.saga.order.Order.OrderStatus;
 import dev.lucasdeabreu.saga.order.event.OrderCancelEvent;
-import dev.lucasdeabreu.saga.order.event.OrderCreatedEvent;
+import dev.lucasdeabreu.saga.order.event.OrderCreateEvent;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,7 +35,7 @@ public class OrderService {
     }
 
     private void publish(Order order) {
-        OrderCreatedEvent event = new OrderCreatedEvent(UUID.randomUUID().toString(), order);
+        OrderCreateEvent event = new OrderCreateEvent(UUID.randomUUID().toString(), order);
         log.debug("Publishing an order created event {}", event);
         publisher.publishEvent(event);
     }
@@ -61,7 +61,7 @@ public class OrderService {
         }
     }
 
-    // 환불처리 - 정상
+    // 주문처리 - 결제 실패
     @Transactional
     public void cancel(Order order) {
         try {

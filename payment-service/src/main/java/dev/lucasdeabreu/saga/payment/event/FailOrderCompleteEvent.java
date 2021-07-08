@@ -5,9 +5,7 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
-@Setter
-@Getter
-public class FailBillCompleteEvent {
+public class FailOrderCompleteEvent {
     private String transactionId;
     private final Order order;
 }

@@ -1,7 +1,7 @@
 package dev.lucasdeabreu.saga.order;
 
 import dev.lucasdeabreu.saga.order.event.OrderCancelEvent;
-import dev.lucasdeabreu.saga.order.event.OrderCreatedEvent;
+import dev.lucasdeabreu.saga.order.event.OrderCreateEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -32,7 +32,7 @@ public class OrderEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onOrderCreateEvent(OrderCreatedEvent event) {
+    public void onOrderCreateEvent(OrderCreateEvent event) {
         log.debug("Sending order created event to {}, event: {}", queueOrderCreatedName, event);
         rabbitTemplate.convertAndSend(queueOrderCreatedName, converter.toJSON(event));
     }

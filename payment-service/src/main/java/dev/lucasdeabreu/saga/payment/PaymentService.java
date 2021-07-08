@@ -3,7 +3,7 @@ package dev.lucasdeabreu.saga.payment;
 import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.BillCompleteEvent;
 import dev.lucasdeabreu.saga.payment.event.FailBillCancelEvent;
-import dev.lucasdeabreu.saga.payment.event.FailBillCompleteEvent;
+import dev.lucasdeabreu.saga.payment.event.FailOrderCompleteEvent;
 import dev.lucasdeabreu.saga.payment.repository.PaymentRepository;
 import dev.lucasdeabreu.saga.payment.repository.PaymentStatusRepository;
 import dev.lucasdeabreu.saga.refund.Refund;
@@ -42,7 +42,7 @@ public class PaymentService {
             publishBillComplete(order);
         } catch(PaymentException e) {
             log.error(e.getMessage());
-            publishFailBillComplete(order);
+            publishFailOrderComplete(order);
         }
     }
 
@@ -62,10 +62,10 @@ public class PaymentService {
         publisher.publishEvent(billedOrderEvent);
     }
 
-    private void publishFailBillComplete(Order order) {
-        FailBillCompleteEvent failBillCompleteEvent = new FailBillCompleteEvent(transactionIdHolder.getCurrentTransactionId(), order);
-        log.debug("Publishing a fail bill complete event {}", failBillCompleteEvent);
-        publisher.publishEvent(failBillCompleteEvent);
+    private void publishFailOrderComplete(Order order) {
+        FailOrderCompleteEvent failOrderCompleteEvent = new FailOrderCompleteEvent(transactionIdHolder.getCurrentTransactionId(), order);
+        log.debug("Publishing a fail order complete event {}", failOrderCompleteEvent);
+        publisher.publishEvent(failOrderCompleteEvent);
     }
 
     private Payment createOrder(Order order) {
