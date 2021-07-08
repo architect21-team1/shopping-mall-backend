@@ -4,6 +4,8 @@ import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
 import dev.lucasdeabreu.saga.stock.event.OrderDoneEvent;
 import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
+import dev.lucasdeabreu.saga.stock.repository.ProductRepository;
+import dev.lucasdeabreu.saga.stock.repository.StockStatusRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final StockStatusRepository stockStatusRepository;
     private final ApplicationEventPublisher publisher;
     private final TransactionIdHolder transactionIdHolder;
 
@@ -131,5 +134,15 @@ public class ProductService {
 
     public Product get(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    public void updateStockStatus(StockStatus.Status status) {
+        Optional<StockStatus> paymentOptional = stockStatusRepository.findById("stock");
+        if (paymentOptional.isPresent()) {
+            StockStatus stockStatus = paymentOptional.get();
+            stockStatus.setStockStatus(status);
+            stockStatusRepository.save(stockStatus);
+            log.debug("Stock Status was updated : {}", status);
+        }
     }
 }

@@ -4,6 +4,8 @@ import dev.lucasdeabreu.saga.payment.event.BillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.BilledOrderEvent;
 import dev.lucasdeabreu.saga.payment.event.FailBillCancelEvent;
 import dev.lucasdeabreu.saga.payment.event.FailPreparedProductEvent;
+import dev.lucasdeabreu.saga.payment.repository.PaymentRepository;
+import dev.lucasdeabreu.saga.payment.repository.PaymentStatusRepository;
 import dev.lucasdeabreu.saga.refund.Refund;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
 import lombok.AllArgsConstructor;
@@ -20,7 +22,7 @@ import java.util.Optional;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final CardCompanyRepository cardCompanyRepository;
+    private final PaymentStatusRepository paymentStatusRepository;
     private final ApplicationEventPublisher publisher;
     private final TransactionIdHolder transactionIdHolder;
 
@@ -110,4 +112,13 @@ public class PaymentService {
         }
     }
 
+    public void updatePaymentStatus(PaymentStatus.Status status) {
+        Optional<PaymentStatus> paymentOptional = paymentStatusRepository.findById("payment");
+        if (paymentOptional.isPresent()) {
+            PaymentStatus paymentStatus = paymentOptional.get();
+            paymentStatus.setPaymentStatus(status);
+            paymentStatusRepository.save(paymentStatus);
+            log.debug("Payment Status was updated : {}", status);
+        }
+    }
 }

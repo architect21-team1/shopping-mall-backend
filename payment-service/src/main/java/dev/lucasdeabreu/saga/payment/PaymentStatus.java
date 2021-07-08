@@ -13,12 +13,17 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "card")
-public class Card {
+@Table(name = "paymentStatus")
+public class PaymentStatus {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    private Boolean isOk;
+    @Enumerated(EnumType.STRING)
+    private Status paymentStatus;
+
+    public enum Status {
+        NORMAL, ORDER_PAYMENT_FAIL, REFUND_PAYMENT_FAIL
+    }
+
 }

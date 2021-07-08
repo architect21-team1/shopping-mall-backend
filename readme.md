@@ -1,9 +1,7 @@
-# Saga Pattern Example
+# Shopping Mall
 
 ## What is it?
-This is an example of Saga Patten wrote in Java and using RabbitMQ. 
-There are two type of architecture for this pattern: **Choreography** and **Orchestration**. 
-For this example I used Choreography one.
+코레오그래피 사가를 위한 예제 코드
 
 ## References
 * https://microservices.io/patterns/data/saga.html
