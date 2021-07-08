@@ -29,12 +29,12 @@ public class PaymentService {
 
     @Transactional
     public void bill(Order order) {
-        log.debug("Charging order {}", order);
+        log.debug("Bill order {}", order);
 
         try {
             Payment payment = createOrder(order);
 
-            checkPayment(payment);
+            checkPayment(order);
 
             log.debug("Saving payment {}", payment);
             paymentRepository.save(payment);
@@ -46,12 +46,12 @@ public class PaymentService {
         }
     }
 
-    private void checkPayment(Payment payment) {
+    private void checkPayment(Order order) {
         Optional<PaymentStatus> paymentStatusOptional = paymentStatusRepository.findById("payment");
         if (paymentStatusOptional.isPresent()) {
             PaymentStatus paymentStatus = paymentStatusOptional.get();
             if (paymentStatus.getPaymentStatus().equals(PaymentStatus.Status.ORDER_PAYMENT_FAIL)) {
-                throw new PaymentException("Payment " + payment.getId() + " have a problem.");
+                throw new PaymentException("Payment - Order " + order.getId() + " have a problem.");
             }
         }
     }
@@ -77,19 +77,48 @@ public class PaymentService {
     }
 
     @Transactional
-    public void refundPayment(Refund refund) {
+    public void billCancel(Refund refund) {
+        log.debug("Bill cancel order {}", refund.getOrderId());
         try {
-            occurError(refund);
-            refund(refund.getOrderId());
-            publishBillComplete(refund);
+            Payment payment = cancelPayment(refund.getOrderId());
+
+            checkCancelPayment(refund.getId(), refund.getOrderId(), payment.getId());
+
+            paymentRepository.save(payment);
+
+            publishBillCancel(refund);
         } catch (PaymentException e) {
-            log.error(e.getMessage() + "///");
+            log.error(e.getMessage());
             publishFailBillCancel(refund);
         }
     }
 
-    private void occurError(Refund refund) {
-        throw new PaymentException("Refund id " + refund.getId() + " have a problem.");
+    private Payment cancelPayment(Long orderId) {
+        log.debug("Refund Payment by order id {}", orderId);
+        Optional<Payment> paymentOptional = paymentRepository.findByOrderId(orderId);
+        if (paymentOptional.isPresent()) {
+            Payment payment = paymentOptional.get();
+            payment.setPaymentStatus(Payment.PaymentStatus.REFUND);
+            return payment;
+        } else {
+            throw new PaymentException("Cannot find the Payment by order id " +  orderId + " to refund");
+        }
+    }
+
+    private void checkCancelPayment(Long refundId, Long orderId, Long paymentId) {
+        Optional<PaymentStatus> paymentStatusOptional = paymentStatusRepository.findById("payment");
+        if (paymentStatusOptional.isPresent()) {
+            PaymentStatus paymentStatus = paymentStatusOptional.get();
+            if (paymentStatus.getPaymentStatus().equals(PaymentStatus.Status.REFUND_PAYMENT_FAIL)) {
+                throw new PaymentException("[Refund] Payment [refundId: " + refundId + ", paymentId: " + paymentId + ", orderId: " + orderId + "] have a problem.");
+            }
+        }
+    }
+
+    private void publishBillCancel(Refund refund) {
+        BillCancelEvent billCancelEvent = new BillCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
+        log.debug("Publishing a bill cancel event {}", billCancelEvent);
+        publisher.publishEvent(billCancelEvent);
     }
 
     private void publishFailBillCancel(Refund refund) {
@@ -104,15 +133,18 @@ public class PaymentService {
         publisher.publishEvent(event);
     }
 
+
+
     @Transactional
-    public void refund(Long orderId) {
+    public void billCancel(Long orderId) {
+
         log.debug("Refund Payment by order id {}", orderId);
         Optional<Payment> paymentOptional = paymentRepository.findByOrderId(orderId);
         if (paymentOptional.isPresent()) {
             Payment payment = paymentOptional.get();
             payment.setPaymentStatus(Payment.PaymentStatus.REFUND);
             paymentRepository.save(payment);
-            log.debug("Payment {} was refund", payment.getId());
+            log.debug("Payment - order id {} was refund", orderId);
         } else {
             log.error("Cannot find the Payment by order id {} to refund", orderId);
         }

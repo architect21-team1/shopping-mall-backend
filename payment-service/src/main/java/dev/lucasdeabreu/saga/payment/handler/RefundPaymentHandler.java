@@ -24,6 +24,6 @@ public class RefundPaymentHandler {
         log.debug("Handling a refund order event {}", payload);
         RefundPaymentEvent event = converter.toObject(payload, RefundPaymentEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
-        paymentService.refund(event.getOrder().getId());
+        paymentService.billCancel(event.getOrder().getId());
     }
 }
