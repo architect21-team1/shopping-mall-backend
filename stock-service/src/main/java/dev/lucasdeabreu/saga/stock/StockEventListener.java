@@ -22,17 +22,20 @@ public class StockEventListener {
     private final Converter converter;
     private final String queueOrderDoneName;
     private final String queueRefundCompleteName;
+    private final String queueFailRefundCompleteName;
     private final String topicOrderCanceledName;
 
     public StockEventListener(RabbitTemplate rabbitTemplate,
                               Converter converter,
                               @Value("${queue.order-done}") String queueOrderDoneName,
                               @Value("${queue.refund-complete}") String queueRefundCompleteName,
+                              @Value("${queue.fail-refund-complete}") String queueFailRefundCompleteName,
                               @Value("${topic.order-canceled}") String topicOrderCanceledName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
         this.queueOrderDoneName = queueOrderDoneName;
         this.queueRefundCompleteName = queueRefundCompleteName;
+        this.queueFailRefundCompleteName = queueFailRefundCompleteName;
         this.topicOrderCanceledName = topicOrderCanceledName;
     }
 
@@ -48,5 +51,12 @@ public class StockEventListener {
     public void onRefundCompleteEvent(RefundCompleteEvent event) {
         log.debug("Sending refund complete event to {}, event: {}", queueRefundCompleteName, event);
         rabbitTemplate.convertAndSend(queueRefundCompleteName, converter.toJSON(event));
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
+    public void onFailRefundCompleteEvent(RefundCompleteEvent event) {
+        log.debug("Sending refund complete event to {}, event: {}", queueFailRefundCompleteName, event);
+        rabbitTemplate.convertAndSend(queueFailRefundCompleteName, converter.toJSON(event));
     }
 }

@@ -86,7 +86,7 @@ public class PaymentService {
 
     private void publishFailBillCancel(Refund refund) {
         FailBillCancelEvent failBillCancelEvent = new FailBillCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
-        log.debug("Publishing a fail payment event {}", failBillCancelEvent);
+        log.debug("Publishing a fail bill cancel event {}", failBillCancelEvent);
         publisher.publishEvent(failBillCancelEvent);
     }
 

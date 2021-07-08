@@ -60,6 +60,10 @@ public class ProductService {
         cancelUpdateStock(order, product);
     }
 
+    public void occurError() {
+//        throw new StockException();
+    }
+
     private void publishRefundComplete(Refund refund) {
         RefundCompleteEvent event = new RefundCompleteEvent(transactionIdHolder.getCurrentTransactionId(), refund);
         log.debug("Publishing refund complete event {}", event);
@@ -113,19 +117,19 @@ public class ProductService {
         });
     }
 
-    public List<Product> findAll() {
-        return productRepository.findAll();
-    }
-
-    public Product get(Long id) {
-        return productRepository.findById(id).orElse(null);
-    }
-
     private Order getOrder(Long orderId) {
         final String uri = "http://localhost:8081/api/orders/" + orderId ;
         log.info(uri);
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForObject(uri, Order.class);
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
+    }
+
+    public Product get(Long id) {
+        return productRepository.findById(id).orElse(null);
     }
 }

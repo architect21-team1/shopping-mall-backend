@@ -60,7 +60,7 @@ public class BilledOrderEventListener {
     }
 
     @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onFailBillCancelEvent(FailBillCancelEvent event) {
         log.debug("Sending fail bill cancel event to {}, event: {}", queueFailBillCancelName, event);
         rabbitTemplate.convertAndSend(queueFailBillCancelName, converter.toJSON(event));
