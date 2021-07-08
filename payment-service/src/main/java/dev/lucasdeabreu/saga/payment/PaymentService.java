@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -120,5 +121,9 @@ public class PaymentService {
             paymentStatusRepository.save(paymentStatus);
             log.debug("Payment Status was updated : {}", status);
         }
+    }
+
+    public List<Payment> findAll() {
+        return paymentRepository.findAll();
     }
 }
