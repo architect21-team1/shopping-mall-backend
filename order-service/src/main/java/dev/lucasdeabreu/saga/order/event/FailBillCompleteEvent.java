@@ -1,6 +1,7 @@
-package dev.lucasdeabreu.saga.stock.event;
+package dev.lucasdeabreu.saga.order.event;
 
-import dev.lucasdeabreu.saga.stock.Refund;
+import dev.lucasdeabreu.saga.order.Order;
+import dev.lucasdeabreu.saga.order.Refund;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @ToString
-public class RefundCompleteEvent {
+public class FailBillCompleteEvent {
     private String transactionId;
-    private Refund refund;
+    private Order order;
 }

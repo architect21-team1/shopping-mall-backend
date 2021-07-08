@@ -1,8 +1,8 @@
-package dev.lucasdeabreu.saga.stock;
+package dev.lucasdeabreu.saga.product;
 
+import dev.lucasdeabreu.saga.product.event.OrderCompleteEvent;
+import dev.lucasdeabreu.saga.product.event.RefundCompleteEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
-import dev.lucasdeabreu.saga.stock.event.OrderCompleteEvent;
-import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,20 +22,17 @@ public class StockEventListener {
     private final String queueOrderCompleteName;
     private final String queueRefundCompleteName;
     private final String queueFailRefundCompleteName;
-    private final String topicOrderCanceledName;
 
     public StockEventListener(RabbitTemplate rabbitTemplate,
                               Converter converter,
                               @Value("${queue.order-complete}") String queueOrderCompleteName,
                               @Value("${queue.refund-complete}") String queueRefundCompleteName,
-                              @Value("${queue.fail-refund-complete}") String queueFailRefundCompleteName,
-                              @Value("${topic.order-canceled}") String topicOrderCanceledName) {
+                              @Value("${queue.fail-refund-complete}") String queueFailRefundCompleteName) {
         this.rabbitTemplate = rabbitTemplate;
         this.converter = converter;
         this.queueOrderCompleteName = queueOrderCompleteName;
         this.queueRefundCompleteName = queueRefundCompleteName;
         this.queueFailRefundCompleteName = queueFailRefundCompleteName;
-        this.topicOrderCanceledName = topicOrderCanceledName;
     }
 
     @Async

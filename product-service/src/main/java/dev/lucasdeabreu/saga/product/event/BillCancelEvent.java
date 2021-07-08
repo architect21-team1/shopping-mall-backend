@@ -1,6 +1,6 @@
-package dev.lucasdeabreu.saga.stock.event;
+package dev.lucasdeabreu.saga.product.event;
 
-import dev.lucasdeabreu.saga.stock.Refund;
+import dev.lucasdeabreu.saga.product.Refund;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

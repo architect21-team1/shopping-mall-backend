@@ -63,6 +63,17 @@ public class OrderService {
 
     // 환불처리 - 정상
     @Transactional
+    public void cancel(Order order) {
+        try {
+            Order orderResult = updateOrderStatus(order.getId(), OrderStatus.CANCEL);
+            repository.save(orderResult);
+        } catch(OrderException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    // 환불처리 - 정상
+    @Transactional
     public void orderCancel(Refund refund) {
         try {
             Order order = updateOrderStatus(refund.getOrderId(), OrderStatus.CANCEL);
@@ -91,20 +102,6 @@ public class OrderService {
         OrderCancelEvent event = new OrderCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
         log.debug("Publishing an order created event {}", event);
         publisher.publishEvent(event);
-    }
-
-    @Transactional
-    public void orderCancel(Long orderId) {
-        log.debug("Canceling Order {}", orderId);
-        Optional<Order> optionalOrder = repository.findById(orderId);
-        if (optionalOrder.isPresent()) {
-            Order order = optionalOrder.get();
-            order.setStatus(OrderStatus.CANCEL);
-            repository.save(order);
-            log.debug("Order {} was canceled", order.getId());
-        } else {
-            log.error("Cannot find an Order by transaction {}", orderId);
-        }
     }
 
 }

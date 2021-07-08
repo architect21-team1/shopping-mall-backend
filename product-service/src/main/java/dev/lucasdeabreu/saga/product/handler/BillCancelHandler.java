@@ -1,30 +1,31 @@
-package dev.lucasdeabreu.saga.refund.handler;
+package dev.lucasdeabreu.saga.product.handler;
 
-import dev.lucasdeabreu.saga.refund.RefundService;
-import dev.lucasdeabreu.saga.refund.event.FailBillCancelEvent;
-import dev.lucasdeabreu.saga.refund.event.OrderCancelEvent;
 import dev.lucasdeabreu.saga.shared.Converter;
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
+import dev.lucasdeabreu.saga.product.StockService;
+import dev.lucasdeabreu.saga.product.event.BillCancelEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+@AllArgsConstructor
 @Log4j2
 @Component
-@AllArgsConstructor
-public class FailBillCancelHandler {
+public class BillCancelHandler {
 
     private final Converter converter;
-    private final RefundService refundService;
+    private final StockService stockService;
     private final TransactionIdHolder transactionIdHolder;
 
-    @RabbitListener(queues = {"${queue.fail-bill-complete}"})
+    @RabbitListener(queues = {"${queue.bill-cancel}"})
     public void handle(@Payload String payload) {
-        log.debug("Handling a fail bill cancel event {}", payload);
-        FailBillCancelEvent event = converter.toObject(payload, FailBillCancelEvent.class);
+        log.debug("Handling a bill cancel event {}", payload);
+        BillCancelEvent event = converter.toObject(payload, BillCancelEvent.class);
         transactionIdHolder.setCurrentTransactionId(event.getTransactionId());
-        refundService.cancelRefund(event.getRefund());
+        stockService.refundComplete(event.getRefund());
     }
+
+
 }

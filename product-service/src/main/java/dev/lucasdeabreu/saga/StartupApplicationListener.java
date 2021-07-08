@@ -1,9 +1,9 @@
 package dev.lucasdeabreu.saga;
 
-import dev.lucasdeabreu.saga.stock.Product;
-import dev.lucasdeabreu.saga.stock.StockStatus;
-import dev.lucasdeabreu.saga.stock.repository.ProductRepository;
-import dev.lucasdeabreu.saga.stock.repository.StockStatusRepository;
+import dev.lucasdeabreu.saga.product.Product;
+import dev.lucasdeabreu.saga.product.StockStatus;
+import dev.lucasdeabreu.saga.product.repository.ProductRepository;
+import dev.lucasdeabreu.saga.product.repository.StockStatusRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationListener;

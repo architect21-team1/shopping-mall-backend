@@ -1,9 +1,9 @@
-package dev.lucasdeabreu.saga.stock.handler;
+package dev.lucasdeabreu.saga.product.handler;
 
 import dev.lucasdeabreu.saga.shared.Converter;
-import dev.lucasdeabreu.saga.stock.StockService;
-import dev.lucasdeabreu.saga.stock.StockException;
-import dev.lucasdeabreu.saga.stock.event.FailPreparedProductEvent;
+import dev.lucasdeabreu.saga.product.StockService;
+import dev.lucasdeabreu.saga.product.StockException;
+import dev.lucasdeabreu.saga.product.event.FailPreparedProductEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

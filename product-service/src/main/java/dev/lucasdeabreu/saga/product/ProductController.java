@@ -1,4 +1,4 @@
-package dev.lucasdeabreu.saga.stock;
+package dev.lucasdeabreu.saga.product;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;

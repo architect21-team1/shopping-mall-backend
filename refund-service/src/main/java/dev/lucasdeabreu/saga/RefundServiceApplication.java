@@ -14,12 +14,12 @@ public class RefundServiceApplication {
         SpringApplication.run(RefundServiceApplication.class, args);
     }
 
-    @Bean
-    public ObjectMapper mapper() {
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        return mapper;
-    }
+//    @Bean
+//    public ObjectMapper mapper() {
+//        final ObjectMapper mapper = new ObjectMapper();
+//        mapper.registerModule(new JavaTimeModule());
+//        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//        return mapper;
+//    }
 }

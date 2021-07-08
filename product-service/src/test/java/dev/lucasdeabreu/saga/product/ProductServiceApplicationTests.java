@@ -1,4 +1,4 @@
-package dev.lucasdeabreu.saga.stock;
+package dev.lucasdeabreu.saga.product;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

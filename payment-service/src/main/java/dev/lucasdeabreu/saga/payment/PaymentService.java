@@ -64,7 +64,7 @@ public class PaymentService {
 
     private void publishFailBillComplete(Order order) {
         FailBillCompleteEvent failBillCompleteEvent = new FailBillCompleteEvent(transactionIdHolder.getCurrentTransactionId(), order);
-        log.debug("Publishing a fail bill complete  event {}", failBillCompleteEvent);
+        log.debug("Publishing a fail bill complete event {}", failBillCompleteEvent);
         publisher.publishEvent(failBillCompleteEvent);
     }
 
@@ -129,7 +129,7 @@ public class PaymentService {
 
     private void publishBillComplete(Refund refund) {
         BillCancelEvent event = new BillCancelEvent(transactionIdHolder.getCurrentTransactionId(), refund);
-        log.debug("Publishing an bill cancel event {}", event);
+        log.debug("Publishing an bill complete event {}", event);
         publisher.publishEvent(event);
     }
 

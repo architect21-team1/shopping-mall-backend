@@ -1,11 +1,11 @@
-package dev.lucasdeabreu.saga.stock;
+package dev.lucasdeabreu.saga.product;
 
 import dev.lucasdeabreu.saga.shared.TransactionIdHolder;
-import dev.lucasdeabreu.saga.stock.event.OrderCanceledEvent;
-import dev.lucasdeabreu.saga.stock.event.OrderCompleteEvent;
-import dev.lucasdeabreu.saga.stock.event.RefundCompleteEvent;
-import dev.lucasdeabreu.saga.stock.repository.ProductRepository;
-import dev.lucasdeabreu.saga.stock.repository.StockStatusRepository;
+import dev.lucasdeabreu.saga.product.event.OrderCanceledEvent;
+import dev.lucasdeabreu.saga.product.event.OrderCompleteEvent;
+import dev.lucasdeabreu.saga.product.event.RefundCompleteEvent;
+import dev.lucasdeabreu.saga.product.repository.ProductRepository;
+import dev.lucasdeabreu.saga.product.repository.StockStatusRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
